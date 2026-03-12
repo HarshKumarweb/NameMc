@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Minecraft Player Search | UUID & Skin Viewer</title>
+
+<meta name="description" content="Search Minecraft usernames and view UUID, avatar and skins instantly.">
+<meta name="keywords" content="minecraft uuid search, minecraft skin viewer, minecraft username lookup">
+
+<style>
+
+body{
+margin:0;
+font-family:Arial, sans-serif;
+background:#050505;
+color:white;
+}
+
+/* HEADER */
+
+header{
+background:#000;
+padding:20px;
+text-align:center;
+border-bottom:2px solid #00aaff;
+box-shadow:0 0 15px #00aaff;
+}
+
+header h1{
+color:#00aaff;
+text-shadow:0 0 10px #00aaff;
+margin:0;
+}
+
+/* SEARCH AREA */
+
+.search-area{
+text-align:center;
+margin-top:50px;
+}
+
+.search-area input{
+
+padding:12px;
+width:260px;
+background:black;
+border:2px solid #00aaff;
+color:white;
+outline:none;
+
+}
+
+.search-area button{
+
+padding:12px 20px;
+background:#00aaff;
+border:none;
+color:black;
+font-weight:bold;
+cursor:pointer;
+margin-left:10px;
+box-shadow:0 0 10px #00aaff;
+
+}
+
+.search-area button:hover{
+
+box-shadow:0 0 25px #00aaff;
+
+}
+
+/* RESULT CARD */
+
+.results{
+
+margin-top:40px;
+text-align:center;
+
+}
+
+.card{
+
+display:inline-block;
+background:#000;
+border:1px solid #00aaff;
+padding:25px;
+box-shadow:0 0 20px #00aaff;
+max-width:400px;
+
+}
+
+.card img{
+
+margin-top:10px;
+
+}
+
+/* FOOTER */
+
+footer{
+
+margin-top:60px;
+padding:20px;
+text-align:center;
+background:#000;
+border-top:2px solid #00aaff;
+color:#00aaff;
+
+}
+
+a{
+
+color:#00aaff;
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<header>
+
+<h1>Minecraft Player Search</h1>
+<p>Find UUID, avatar and skins instantly</p>
+
+</header>
+
+
+
+<div class="search-area">
+
+<input id="username" placeholder="Enter Minecraft username">
+
+<button onclick="searchPlayer()">Search</button>
+
+</div>
+
+
+
+<div class="results" id="results"></div>
+
+
+
+<footer>
+
+<p>© Minecraft Player Search</p>
+<p>Not affiliated with Mojang</p>
+
+</footer>
+
+
+
+<script>
+
+async function searchPlayer(){
+
+let username = document.getElementById("username").value.trim();
+
+let results = document.getElementById("results");
+
+if(username === ""){
+
+results.innerHTML = "Please enter a username.";
+
+return;
+
+}
+
+results.innerHTML = "Searching...";
+
+try{
+
+/* GET UUID */
+
+let response = await fetch(
+"https://api.mojang.com/users/profiles/minecraft/" + username
+);
+
+if(!response.ok){
+
+throw new Error("Player not found");
+
+}
+
+let data = await response.json();
+
+let uuid = data.id;
+
+/* RENDER LINKS */
+
+let avatar = "https://crafatar.com/avatars/" + uuid + "?size=200";
+let skin = "https://crafatar.com/renders/body/" + uuid + "?size=300";
+
+/* DISPLAY RESULT */
+
+results.innerHTML = `
+
+<div class="card">
+
+<h2>${data.name}</h2>
+
+<p><b>UUID:</b> ${uuid}</p>
+
+<h3>Avatar</h3>
+
+<img src="${avatar}" width="150">
+
+<p>
+<a href="${avatar}" target="_blank">
+Open Avatar Link
+</a>
+</p>
+
+<h3>3D Skin Render</h3>
+
+<img src="${skin}" width="200">
+
+<p>
+<a href="${skin}" target="_blank">
+Open Skin Link
+</a>
+</p>
+
+<p>
+<a href="https://namemc.com/profile/${uuid}" target="_blank">
+View on NameMC
+</a>
+</p>
+
+</div>
+
+`;
+
+}
+
+catch(error){
+
+results.innerHTML = "❌ Player not found.";
+
+}
+
+}
+
+</script>
+
+
+
+</body>
+
+</html>
